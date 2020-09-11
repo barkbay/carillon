@@ -87,9 +87,10 @@ func (g *GPIOEventSensor) Start() {
 				// Check if an event has bot been processed in the last duration
 				nextEvent := g.lastEvent.Add(5 * time.Second)
 				if now.Before(nextEvent) {
-					log.Infof("Skip event %v, next one allowed at %s (now=%s)", evt, nextEvent, now)
+					log.Infof("Skip button, next one allowed at %s (now=%s)", nextEvent, now)
 					continue
 				}
+				log.Infof("Allowed button, next one allowed at %s (now=%s)", nextEvent, now)
 				g.lastEvent = now
 				g.fireProcessors(evt)
 			}
@@ -102,4 +103,5 @@ func (g *GPIOEventSensor) fireProcessors(evt gpiod.LineEvent) {
 	for _, processor := range g.ep {
 		processor.OnEvent(evt)
 	}
+	log.Infof("Event %v fired", evt)
 }

@@ -47,8 +47,16 @@ func (b *Bell) OnEvent(gpiod.LineEvent) {
 		}
 		log.Info("END BELL")
 	}()
-	if err := b.line.SetValue(1); err != nil {
-		log.Errorf("Error while setting bell line to 1: %w", err)
+
+	for i := 0; i < 2; i++ {
+		_ = b.line.SetValue(1)
+		time.Sleep(500 * time.Millisecond)
+		for j := 0; j < 4; j++ {
+			_ = b.line.SetValue(0)
+			time.Sleep(250 * time.Millisecond)
+			_ = b.line.SetValue(1)
+			time.Sleep(250 * time.Millisecond)
+			_ = b.line.SetValue(0)
+		}
 	}
-	time.Sleep(2 * time.Second)
 }
