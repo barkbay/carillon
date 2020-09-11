@@ -21,10 +21,6 @@ import (
 	"github.com/warthog618/gpiod"
 )
 
-var (
-	notRunning uint32 = 0
-)
-
 type Singleton struct {
 	isRunning *uint32
 	c         chan gpiod.LineEvent
@@ -36,7 +32,7 @@ type Singleton struct {
 func NewSingleton(processor EventProcessor) *Singleton {
 	s := &Singleton{
 		processor: processor,
-		isRunning: &notRunning,
+		isRunning: new(uint32),
 		c:         make(chan gpiod.LineEvent, 1),
 	}
 	go func() {

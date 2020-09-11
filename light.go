@@ -26,10 +26,10 @@ type Light struct {
 }
 
 func NewLight(chip *gpiod.Chip) EventProcessor {
-	b := &Light{
+	l := &Light{
 		chip: chip,
 	}
-	return b
+	return l
 }
 
 func (l *Light) String() string {
