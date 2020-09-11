@@ -41,8 +41,8 @@ func NewSingleton(processor EventProcessor) *Singleton {
 	}
 	go func() {
 		for evt := range s.c {
-			log.Info("Singleton event")
 			if atomic.CompareAndSwapUint32(s.isRunning, 0, 1) {
+				log.Infof("Start processor %s", s.processor.String())
 				go s.processor.OnEventWithCallback(
 					evt,
 					// Restore the state to let a new goroutine run
@@ -50,14 +50,14 @@ func NewSingleton(processor EventProcessor) *Singleton {
 				)
 				continue
 			}
-			log.Info("Event discarded, goroutine already running")
+			log.Infof("Event discarded, goroutine for %s already running", s.processor.String())
 		}
 	}()
 	return s
 }
 
 func (s *Singleton) callback() {
-	log.Infof("Reset isRunning for %s", s.processor.String())
+	log.Infof("Processor %s ended", s.processor.String())
 	atomic.StoreUint32(s.isRunning, 0)
 }
 func (s *Singleton) String() string {

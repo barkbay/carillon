@@ -18,49 +18,33 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"github.com/warthog618/gpiod"
-	"github.com/warthog618/gpiod/device/rpi"
 )
 
-type Bell struct {
+type Light struct {
 	chip *gpiod.Chip
 	line *gpiod.Line
 }
 
-func NewBell(chip *gpiod.Chip) EventProcessor {
-	b := &Bell{
+func NewLight(chip *gpiod.Chip) EventProcessor {
+	b := &Light{
 		chip: chip,
-	}
-	offset := rpi.GPIO23
-	var err error
-	if b.line, err = chip.RequestLine(offset, gpiod.AsOutput(0)); err != nil {
-		panic(err)
 	}
 	return b
 }
 
-func (b *Bell) String() string {
-	return "Bell"
+func (l *Light) String() string {
+	return "Light"
 }
 
-func (b *Bell) OnEventWithCallback(_ gpiod.LineEvent, callback func()) {
+func (l *Light) OnEventWithCallback(_ gpiod.LineEvent, callback func()) {
 	defer func() {
-		if err := b.line.SetValue(0); err != nil {
-			log.Errorf("Error while setting bell line to 0: %w", err)
-		}
+		log.Info("Turn off light")
 		if callback != nil {
 			callback()
 		}
 	}()
 
-	for i := 0; i < 2; i++ {
-		_ = b.line.SetValue(1)
-		time.Sleep(500 * time.Millisecond)
-		for j := 0; j < 4; j++ {
-			_ = b.line.SetValue(0)
-			time.Sleep(250 * time.Millisecond)
-			_ = b.line.SetValue(1)
-			time.Sleep(250 * time.Millisecond)
-			_ = b.line.SetValue(0)
-		}
-	}
+	log.Info("Turn on light")
+	time.Sleep(10 * time.Second)
+
 }

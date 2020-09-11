@@ -55,6 +55,7 @@ func main() {
 		chip,
 		stop,
 		NewSingleton(NewBell(chip)),
+		NewSingleton(NewLight(chip)),
 	)
 	defer sensor.Close()
 
