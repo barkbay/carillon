@@ -16,10 +16,9 @@ package main
 import (
 	"time"
 
-	"github.com/warthog618/gpiod/device/rpi"
-
 	log "github.com/sirupsen/logrus"
 	"github.com/warthog618/gpiod"
+	"github.com/warthog618/gpiod/device/rpi"
 )
 
 type Bell struct {
@@ -39,13 +38,20 @@ func NewBell(chip *gpiod.Chip) EventProcessor {
 	return b
 }
 
-func (b *Bell) OnEvent(gpiod.LineEvent) {
+func (b *Bell) String() string {
+	return "Bell"
+}
+
+func (b *Bell) OnEventWithCallback(_ gpiod.LineEvent, callback func()) {
 	log.Info("BEGIN BELL")
 	defer func() {
 		if err := b.line.SetValue(0); err != nil {
 			log.Errorf("Error while setting bell line to 0: %w", err)
 		}
 		log.Info("END BELL")
+		if callback != nil {
+			callback()
+		}
 	}()
 
 	for i := 0; i < 2; i++ {

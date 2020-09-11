@@ -24,7 +24,8 @@ import (
 )
 
 type EventProcessor interface {
-	OnEvent(gpiod.LineEvent)
+	OnEventWithCallback(evt gpiod.LineEvent, callback func())
+	String() string
 }
 
 type GPIOEventSensor struct {
@@ -101,7 +102,8 @@ func (g *GPIOEventSensor) Start() {
 func (g *GPIOEventSensor) fireProcessors(evt gpiod.LineEvent) {
 	log.Infof("Firing event %v", evt)
 	for _, processor := range g.ep {
-		processor.OnEvent(evt)
+		processor := processor
+		processor.OnEventWithCallback(evt, func() { log.Infof("Event %v sent to %s", evt, processor) })
 	}
-	log.Infof("Event %v fired", evt)
+	log.Infof("Event %v sent to ALL the processors", evt)
 }

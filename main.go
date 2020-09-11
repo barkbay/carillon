@@ -19,9 +19,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/warthog618/gpiod"
-
 	log "github.com/sirupsen/logrus"
+	"github.com/warthog618/gpiod"
 )
 
 func init() {
