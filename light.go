@@ -16,6 +16,8 @@ package main
 import (
 	"time"
 
+	"github.com/warthog618/gpiod/device/rpi"
+
 	log "github.com/sirupsen/logrus"
 	"github.com/warthog618/gpiod"
 )
@@ -28,6 +30,11 @@ type Light struct {
 func NewLight(chip *gpiod.Chip) EventProcessor {
 	l := &Light{
 		chip: chip,
+	}
+	offset := rpi.GPIO26
+	var err error
+	if l.line, err = chip.RequestLine(offset, gpiod.AsOutput(0)); err != nil {
+		panic(err)
 	}
 	return l
 }
@@ -45,6 +52,10 @@ func (l *Light) OnEventWithCallback(_ gpiod.LineEvent, callback func()) {
 	}()
 
 	log.Info("Turn on light")
-	time.Sleep(10 * time.Second)
-
+	for j := 0; j < 4*5; j++ {
+		_ = l.line.SetValue(1)
+		time.Sleep(250 * time.Millisecond)
+		_ = l.line.SetValue(0)
+		time.Sleep(250 * time.Millisecond)
+	}
 }
